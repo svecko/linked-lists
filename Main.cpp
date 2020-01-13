@@ -1,147 +1,362 @@
 #include <iostream>
-#include <list>
 
-struct Node
-{
-	int data;
-	Node* next;
-};
+namespace Singly {
 
-static Node* s_Head = nullptr;
-
-void PushFront(int a)
-{
-	Node* tmp = new Node();
-	tmp->data = a;
-
-	if (s_Head == nullptr)
+	struct Node
 	{
-		s_Head = tmp;
-		tmp->next = nullptr;
-	}
-	else
-	{
-		tmp->next = s_Head;
-		s_Head = tmp;
-	}
-}
+		int data;
+		Node* next;
+	};
 
-void PushBack(int a)
-{
-	Node* tmp = new Node();
-	tmp->data = a;
+	static Node* s_Head = nullptr;
 
-	if (s_Head == nullptr)
+	void PushFront(int value)
 	{
-		s_Head = tmp;
-		tmp->next = nullptr;
+		Node* tmp = new Node();
+		tmp->data = value;
+
+		if (s_Head == nullptr)
+		{
+			s_Head = tmp;
+			tmp->next = nullptr;
+		}
+		else
+		{
+			tmp->next = s_Head;
+			s_Head = tmp;
+		}
 	}
-	else
+
+	void PushBack(int value)
+	{
+		Node* tmp = new Node();
+		tmp->data = value;
+
+		if (s_Head == nullptr)
+		{
+			s_Head = tmp;
+			tmp->next = nullptr;
+		}
+		else
+		{
+			Node* p = s_Head;
+			while (p->next != nullptr)
+			{
+				p = p->next;
+			}
+			p->next = tmp;
+			tmp->next = nullptr;
+		}
+	}
+
+	void InsertSorted(int value)
+	{
+		Node* tmp = new Node();
+		tmp->data = value;
+
+		Node* p = s_Head;
+		Node* q = nullptr;
+
+		while (p != nullptr && p->data < value)
+		{
+			q = p;
+			p = p->next;
+		}
+
+		if (s_Head == nullptr)
+		{
+			s_Head = tmp;
+			tmp->next = nullptr;
+		}
+		else if (q == nullptr)
+		{
+			tmp->next = s_Head;
+			s_Head = tmp;
+		}
+		else
+		{
+			q->next = tmp;
+			tmp->next = p;
+		}
+	}
+
+	void Remove(int value)
 	{
 		Node* p = s_Head;
-		while (p->next != nullptr)
+		Node* q = nullptr;
+
+		while (p != nullptr && p->data != value)
 		{
+			q = p;
 			p = p->next;
 		}
-		p->next = tmp;
-		tmp->next = nullptr;
-	}
-}
 
-void PrintList()
-{
-	Node* p = s_Head;
-
-	if (s_Head == nullptr)
-	{
-		std::cout << "Empty list." << std::endl;
+		if (s_Head == nullptr)
+		{
+			std::cout << "[WARN]: Seznam je prazen." << std::endl;
+		}
+		else if (p == nullptr)
+		{
+			std::cout << "[WARN]: Vrednosti ni v seznamu." << std::endl;
+		}
+		else if (q == nullptr)
+		{
+			s_Head = p->next;
+			delete p;
+		}
+		else
+		{
+			q->next = p->next;
+			delete p;
+		}
 	}
-	else
+
+	void RemoveAtIndex(int index)
 	{
+		Node* p = s_Head;
+		Node* q = nullptr;
+
+		int indexCount = 0;
+
+		while (p != nullptr && indexCount != index)
+		{
+			q = p;
+			p = p->next;
+			indexCount++;
+		}
+
+		if (s_Head == nullptr)
+		{
+			std::cout << "[WARN]: Seznam je prazen." << std::endl;
+		}
+		else if (p == nullptr)
+		{
+			std::cout << "[WARN]: Neveljaven index." << std::endl;
+		}
+		else if (q == nullptr)
+		{
+			s_Head = p->next;
+			delete p;
+		}
+		else
+		{
+			q->next = p->next;
+			delete p;
+		}
+	}
+
+	void Print()
+	{
+		Node* p = s_Head;
 		while (p != nullptr)
 		{
-			std::cout << p->data << " ";
+			std::cout << p->data << " -> ";
 			p = p->next;
+		}
+		std::cout << std::endl;
+	}
+}
+
+namespace Doubly {
+
+	struct Node
+	{
+		int data;
+		Node* prev, * next;
+	};
+
+	static Node* s_Head = nullptr;
+	static Node* s_Tail = nullptr;
+
+	void PushFront(int value)
+	{
+		Node* tmp = new Node();
+		tmp->data = value;
+
+		if (s_Head == nullptr)
+		{
+			s_Head = tmp;
+			s_Tail = tmp;
+
+			tmp->prev = nullptr;
+			tmp->next = nullptr;
+		}
+		else
+		{
+			tmp->next = s_Head;
+			s_Head->prev = tmp;
+			tmp->prev = nullptr;
+			s_Head = tmp;
 		}
 	}
 
-	std::cout << std::endl;
-}
-
-void Remove(int a)
-{
-	Node* p = s_Head;
-	Node* q = nullptr;
-
-	while (p != nullptr && p->data != a)
+	void PushBack(int value)
 	{
-		q = p;
-		p = p->next;
-	}
+		Node* tmp = new Node();
+		tmp->data = value;
 
-	if (s_Head == nullptr)
-	{
-		std::cout << "Empty list." << std::endl;
-	}
-	else if (p == nullptr)
-	{
-		std::cout << "Invalid number." << std::endl;
-	}
-	else if (q == nullptr)
-	{
-		s_Head = p->next;
-		delete p;
-	}
-	else
-	{
-		q->next = p->next;
-		delete p;
-	}
-}
+		if (s_Head == nullptr)
+		{
+			s_Head = tmp;
+			s_Tail = tmp;
 
-void RemoveAtIndex(int index)
-{
-	Node* p = s_Head;
-	Node* q = nullptr;
-
-	int indexCount = 0;
-
-	while (p != nullptr && indexCount != index)
-	{
-		q = p;
-		p = p->next;
-		indexCount++;
+			tmp->prev = nullptr;
+			tmp->next = nullptr;
+		}
+		else
+		{
+			Node* p = s_Head;
+			while (p->next != nullptr)
+			{
+				p = p->next;
+			}
+			p->next = tmp;
+			tmp->prev = s_Tail;
+			tmp->next = nullptr;
+			s_Tail = tmp;
+		}
 	}
 
-	if (s_Head == nullptr)
+	void InsertSorted(int value)
 	{
-		std::cout << "Empty list." << std::endl;
-	}
-	else if (p == nullptr)
-	{
-		std::cout << "Invalid index." << std::endl;
-	}
-	else if (q == nullptr)
-	{
-		s_Head = p->next;
-		delete p;
-	}
-	else
-	{
-		q->next = p->next;
-		delete p;
+		Node* tmp = new Node();
+		tmp->data = value;
+
+		Node* p = s_Head;
+		Node* q = nullptr;
+
+		while (p != nullptr && p->data < value)
+		{
+			q = p;
+			p = p->next;
+		}
+
+		if (s_Head == nullptr)
+		{
+			s_Head = tmp;
+			s_Tail = tmp;
+
+			tmp->prev = nullptr;
+			tmp->next = nullptr;
+		}
+		else if (q == nullptr)
+		{
+		
+			tmp->next = s_Head;
+			s_Head->prev = tmp;
+			tmp->prev = nullptr;
+			s_Head = tmp;
+		}
+		else if (p == nullptr)
+		{
+			q->next = tmp;
+			tmp->prev = q;
+			tmp->next = nullptr;
+			s_Tail = nullptr;
+		}
+		else
+		{
+			q->next = tmp;
+			tmp->prev = q;
+			tmp->next = p;
+			p->prev = tmp;
+		}
 	}
 
+	void Remove(int value)
+	{
+		Node* p = s_Head;
+		Node* q = nullptr;
+
+		while (p != nullptr && p->data != value)
+		{
+			q = p;
+			p = p->next;
+		}
+
+		if (s_Head == nullptr)
+		{
+			std::cout << "[WARN]: Seznam je prazen." << std::endl;
+		}
+		else if (p == nullptr)
+		{
+			std::cout << "[WARN]: Vrednosti ni v seznamu." << std::endl;
+		}
+		else if (q == nullptr)
+		{
+			s_Head = p->next;
+			p->next->prev = p->prev;
+			delete p;
+		}
+		else if (p->next == nullptr)
+		{
+			q->next = p->next;
+			s_Tail = p->prev;
+			delete p;
+		}
+		else
+		{
+			q->next = p->next;
+			p->next->prev = p->prev;
+			delete p;
+		}
+	}
+
+	void RemoveAtIndex(int index)
+	{
+		Node* p = s_Head;
+		Node* q = nullptr;
+
+		int indexCount = 0;
+
+		while (p != nullptr && indexCount != index)
+		{
+			q = p;
+			p = p->next;
+			indexCount++;
+		}
+
+		if (s_Head == nullptr)
+		{
+			std::cout << "[WARN]: Seznam je prazen." << std::endl;
+		}
+		else if (p == nullptr)
+		{
+			std::cout << "[WARN]: Neveljaven index." << std::endl;
+		}
+		else if (q == nullptr)
+		{
+			s_Head = p->next;
+			p->next->prev = p->prev;
+			delete p;
+		}
+		else if (p->next == nullptr)
+		{
+			q->next = p->next;
+			s_Tail = p->prev;
+			delete p;
+		}
+		else
+		{
+			q->next = p->next;
+			p->next->prev = p->prev;
+			delete p;
+		}
+	}
+
+	void Print()
+	{
+		Node* p = s_Head;
+		while (p != nullptr)
+		{
+			std::cout << p->data << " <-> ";
+			p = p->next;
+		}
+		std::cout << std::endl;
+	}
 }
 
 int main()
 {
-	PushFront(9);
-	PushBack(100);
-	PushBack(1020);
-	PrintList();
-	Remove(9);
-	PrintList();
-	RemoveAtIndex(1);
-	PrintList();
+
 }
